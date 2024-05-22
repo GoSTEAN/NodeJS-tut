@@ -1,5 +1,8 @@
 const mongoose = require("mongoose");
 mongoose.Promise = global.Promise;
+
+
+
 const dbURL =
   "mongodb+srv://badviruscoder:NLzLRW1iiI52iAr9@bloggy.4gv4jur.mongodb.net/Bloggy?retryWrites=true&w=majority";
 

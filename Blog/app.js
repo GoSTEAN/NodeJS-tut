@@ -1,15 +1,14 @@
 const express = require("express");
 const morgan = require("morgan");
 const { connectDB } = require("./db/mongod");
-const Blog = require('./models/blog')
+const Blog = require("./models/blog");
 
 const app = express();
 
 connectDB();
 
 // register view engine
-app.set("view engine", "ejs");
-
+app.set("view engine", "ejs"); 
 // listen for request
 app.listen(3000);
 
@@ -29,11 +28,13 @@ app.listen(3000);
 // })
 
 app.use(express.static("public"));
+// middleware for accepting form data
+app.use(express.urlencoded({ extended: true }));
 //  morgon for middleware
 app.use(morgan("dev"));
 
 // // mongoose and mongo sandbox routes
-// app.get('/add-blog', (req, res) => { 
+// app.get('/add-blog', (req, res) => {
 //   const blog = new Blog({
 //     title: "new blog 2",
 //     snippet: "about my new blog",
@@ -46,18 +47,18 @@ app.use(morgan("dev"));
 //     })
 //     .catch((err) => {
 //       console.log(err);
-      
+
 //     })
 // })
 
 // app.get('/all-blogs  ', (req, res) => {
-//   Blog.find()
+//   Blog.find() 
 //     .then((result ) => {
 //       res.send(result);
 //     })
 //     .catch((err) => {
 //       console.log(err);
-      
+
 //     })
 // })
 
@@ -68,12 +69,12 @@ app.use(morgan("dev"));
 //     })
 //     .catch((err) => {
 //       console.log(err);
-      
+
 //     })
 // })
 
 app.get("/", (req, res) => {
-  res.redirect('/blogs')
+  res.redirect("/blogs");
 
   // Practies
   // const blogs = [
@@ -89,15 +90,30 @@ app.get("/about", (req, res) => {
 });
 
 // blog routes
-app.get('/blogs', (req, res) => {
-  Blog.find()
-  .then((result) => {
-    res.render('index', { title: 'All Blogs', blogs: result })
-  })
-  .catch((err) => {
-    console.log(err)
-  })
-})
+app.get("/blogs", (req, res) => {
+  Blog.find().sort({ createdAt: -1 })
+    .then((result) => {
+      res.render("index", { title: "All Blogs", blogs: result });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});
+
+app.post("/blogs", (req, res) => {
+  const blog = new Blog(req.body);
+
+  blog
+    .save()
+    .then((result) => {
+      res.redirect("/blogs");
+    })
+    .catch((error) => {
+      console.log( error);
+      res.status(500).send("Internal Server Error");
+    });
+});
+
 
 app.get("/blogs/create", (req, res) => {
   res.render("create", { title: "Create a new blog" });
